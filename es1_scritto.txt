@@ -1,0 +1,41 @@
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Random;
+
+public class EsameProg {
+    public static void main(String[] args) {
+        NumberGenerator ng1 = new NumberGenerator();
+        NumberGenerator ng2 = new NumberGenerator();
+        Calcolatore calc = new Calcolatore();
+        ng1.addObserver(calc);
+        ng2.addObserver(calc);
+
+        for(int i = 0; i < 10; i++) {
+            ng1.generaNumero();
+            ng2.generaNumero();
+        }
+    }
+}
+
+class NumberGenerator extends Observable {
+    private Random rand;
+
+    public NumberGenerator() {
+        rand = new Random();
+    }
+
+    public void generaNumero() {
+        int num;
+        num = rand.nextInt(100);
+        setChanged();
+        notifyObservers(num);
+    }
+}
+
+class Calcolatore implements Observer {
+    public void update(Observable obs, Object extra_args) {
+        if(obs != null && obs instanceof NumberGenerator) {
+            System.out.println(((int)extra_args) * ((int)extra_args));
+        }
+    }
+}

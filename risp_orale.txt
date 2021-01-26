@@ -1,0 +1,304 @@
+- Pattern MVC
+	Integrazione Model-View-Controller della programmazione ad eventi. L'utente 
+	interagisce con la view, il controller in base alle azioni dell'utente richiede 
+	delle elaborazioni dei dati al model che alla fine delle elaborazioni puó 
+	trasmettere il risultato direttamente alla view oppure al controller che le 
+	mostrerá in seguito alla view.
+
+- Livelli di visibilità (private, protected, public), information leakage
+	Private = visibile solo all'interno della classe a cui appartiene (implicitamente
+	final, no late binding).
+	Protected = visibile alla classe e le sue sottoclassi.
+	Public = visibile anche a tutte le classi esterne.
+	Information leakage (pratica) = ancora nessuno lo sa di preciso (?).
+	Information leakage (teorica) = non usare adeguatamente i livelli di visibilitá
+	(information hiding) e rendere disponibile informazioni che dovrebbero essere
+	sensibili o non accessibili pubblicamente.
+
+- Sincronizzazione tra thread
+	I thread condividono le risorse quindi é spesso necessario sincronizzare la loro
+	esecuzione. Si puó utilizzare synchronized per rendere un'istanza condivisa di un 
+	oggetto o una funzione disponibile solo in mutua esclusione. Altre risorse disponibili
+	per la sincronizzazione sono i semafori e i lock (come ReentrantLock). Si puó usare
+	la funzione join per bloccare l'esecuzione del thread che richiama la funzione 
+	attraverso l'istanza del thread che vuole attendere, fino a quando il thread atteso 
+	non sará terminato (da invocare solo dopo acer fatto partire il thread da attendere).
+	L'esecuzione di un thread puó essere sospesa richiamando la wait e ripresa nel momento
+	in cui un altro thread richiama la notify o notifyAll. Se due thread aspettano l'un 
+	l'altro tramite uso di join, wait o lock e nessuno dei due ha modo di sbloccarsi allora 
+	si verifica un deadlock. Nel caso un thread sia in wait, join o attesa di rilascio di 
+	un lock di un altro thread ma esso non viene mai sbloccato si verifica una starvation.
+
+- Semafori
+	Parametro intero equivalente al numero di permessi, si usa acquire e release.
+	Di solito il metodo release viene eseguito nel blocco finally di un try-catch, 
+	altrimenti, se ci dovessere essere errori, il thread manterrebbe la risorsa.
+	Se non ci sono abbastanza permessi disponibili il thread rimane in attesa.
+	Analoghe le interfacce BlockingQueue (istanze di implementazioni con lunghezza finita), 
+	utilizza put e take, Lock, utilizza lock e unlock, Condition, utilizza await e signal.
+
+- Poliformismo: Cast, overloading, overriding
+	In Java un oggetto puó essere utilizzato come oggetto del suo tipo, del suo tipo base o
+	come tipo che estende il suo. Il cast é possibile solo se tra la classe dell'istanza 
+	che si vuole cambiare e la classe di cui si vuole eseguire il cast sono "imparentate". 
+	Si parla di downcasting nel caso si passi da un tipo generico a un tipo piú specifico, 
+	l'istanza avrá solo gli attributi e le funzioni della sopraclasse, nel caso la sottoclasse 
+	contenesse funzioni sovrascritte della sopraclasse allora quelle dell'istanza saranno a 
+	loro volta modificate. Puó produrre ClassCastException a runtime. 
+	Esempio: Sopraclasse x = new Sottoclasse().
+	Si parla di upcasting quando si passa da un tipo specifico a un tipo piú generico, le 
+	classi devono essere in relazione.
+	Overloading = stesso nome di funzione, firma diversa, contesto puó essere presente 
+	in una singola classe (classe con 2 funzioni omonime ma firme diverse).
+	Overriding = firma della funzione completamente uguale, si sovrascrive il codice
+	di una funzione presente nella classe estesa.
+
+- Classi astratte e interfacce
+	Le interfacce contengono firme di funzioni senza implementazione, se una classe
+	implementa un'interfaccia allora dovrá implementare tutte le funzioni 
+	dichiarate nell'interfaccia. Una classe puó implementare piú interfacce.
+	Le classi astratte non possono essere istanziate. Una classe, se estende una 
+	classe astratta, eredita tutti i suoi metodi implementati e implementa
+	i metodi dichiarati come astratti della classe astratta. Una classe puó 
+	estendere solo una classe (astratta o non).
+
+- Eventi, listener ecc
+	Gli eventi sono la base della programmazione ad eventi. 
+	Nella programmazione ad eventi l'utente interagisce con il programma
+	cambiandone lo stato e le istruzioni da eseguire. L'esecuzione di un metodo 
+	effettivamente deve tenere conto di quello che sta succedendo in altre 
+	componenti del programma per continuare, per far si che questo avvenga vengono
+	usati i listener che "restano in allerta" per cambiamenti nello stato del programma.
+
+- ReentrantLock, differenza rispetto a lock delle classi (synchronized)
+	Il ReentrantLock usa lock e unlock esplicitamente tramite istanza del lock stesso, 
+	permette fairness. Il synchronized é un lock implicito che puó essere usato in una 
+	funzione o istanza (per l'esecuzione di una sezione critica) di una qualsiasi classe. 
+	Non ci sono metodi espliciti per richiamare lock e unlock, essi vengono richiamati 
+	implicitamente all'inizio e alla fine della sezione di codice interessata. Java 
+	associa un lock ad ogni oggetto della classe (piú un lock alla classe per sincronizzare 
+	i metodi statici).
+
+- Differenza tra thread e processi
+	A un processo, quando creato, vengono assegnati spazi di memoria indipendenti, 
+	un processo non puó quindi accedere allo spazio di memoria di un altro processo.
+	I thread, al contrario dei processi, condividono le risorse del processo a cui
+	appartengono durante la loro esecuzione. I thread condividono le risorse nell'heap,
+	i processi dopo essere stati creati ne creano una copia propria.
+
+- Eccezioni controllate e non
+	Se una porzione di codice puó generare un'eccezione, bisogna racchiuderla in un 
+	blocco try e gestire le eccezioni nel seguente blocco catch. Per una migliore 
+	gestione degli errori, di solito i catch dei chiamanti gestiscono le sopraclassi 
+	delle eccezioni dei figli. Le eccezioni non gestite vengono segnalate dal
+	compilatore o interrompono l'esecuzione del programma. Si possono creare funzioni 
+	che potrebbero generare eccezioni aggiungendo "throws" seguito dal nome della classe
+	dell'eccezione nella firma della funzione. Si possono creare classi di eccezioni
+	estendendo la classe Exception. 
+		Gli Error indicano errori del sistema (es. out of memory) mentre le eccezioni
+		errori causati dal programma.
+
+- Differenza tra pipe e socket
+	Le pipe possono essere utilizzate per la comunicazione tra due processi sulla stessa 
+	macchina, di solito tra processo padre e figlio.
+	I socket mettono in comunicazione uno (diversi processi) o due host, usano IPv4 o IPv6
+	e numero di porta per stabilire la connessione.
+
+- Punti salienti della programmazione OO
+	Ogni oggetto "definisce" un'entitá tramite dati sotto forma di attributi o proprietá e 
+	funzioni/metodi. É facile riprodurre quello che si vuole in uno schema top-down che 
+	favorisce l'organizzazione, gestione, modularitá e riuso del codice.
+
+- Maven
+	É uno strumento di gestione di progetti software basati su Java e build automation.
+	Utilizza un file XML che descrive le dipendenze fra il progetto e le varie versioni 
+	di librerie necessarie nonché le dipendenze fra di esse. Effettua automaticamente il 
+	download di librerie Java e plug-in Maven dai vari repository definiti scaricandoli 
+	in locale o in un repository centralizzato.
+
+- Wildcard
+	La wildcard "?" si usa quando non si sa quale sia il tipo di parametrizzazione di una
+	funzione. É possibile specificare che il parametro possa essere istanza di una classe 
+	X o sopraclasse di una classe X usando il termine "super". Es. <? super X>
+
+- Event Adapter
+	Classi che implementano l'interfaccia EventListener, forniscono una gestione di default
+	di molti eventi, in modo che l'utente possa estenderle in una propria classe e gestire
+	tramite override di funzioni solo quelli che gli interessano.
+
+- Modulo Kernel
+	Struttura comunemente usata nelle librerie. Si ha un "kernel" che mette a disposizione
+	un'interfaccia che l'utente puó implementare in classi/moduli le cui istanze verrano 
+	a loro volta possibilmente usate da altre classi dichiarate e implementate nel kernel.
+	Permette compilazione separata del codice nel "kernel" e il codice presente nei "moduli".  
+
+- Cos’è un thread ed il suo ciclo di vita
+	Thread, ovvero un light weight process, vengono chiamati processi leggeri perchè 
+	al contrario dei normali processi condividono spazio di indirizzamento ed area dati.
+	La programmazzione parallela ovvero la programmazione multi-thread introduce un 
+	nuovo ostacolo, ovvero, la gestione della concorrenza. Meccanismo di esecuzione
+	dei task. Quando uno o più Thread lavorano con la stessa risorsa è necessario gestire 
+	la concorrenza per evitare problemi di insistenza dati.
+	CICLO DI VITA ----> NEW THREAD, thread.start ---> Quando un Thread è pronto per 
+	la sua esecuzione è in stato di RUNNABLE (N.B Che non significa che sia running)
+	Se riceve una sleep, op I/O, attesa di lock, wait passa da runnable a BLOCKED, 
+	dopo che la richiesta è terminata torna a Runnable.
+	Dopo che un Thread ha finito la sua esecuzione passa in stato TERMINATED
+
+- Thread Pool
+	Dato che le creazione, esecuzione e distruzione dei thread richiedono un quantitavo 
+	notevole di lavoro e occupano abbastanza RAM, di solito si considera di utilizzare un
+	numero limitato di thread, la thread pool, a cui vengono passati i vari task, sequenze
+	di istruzioni (runnable), per essere eseguiti. La gestione ed esecuzione dei task nelle 
+	thread pool sono eseguite dagli executors.
+
+- Cosa sono le classi interne e a cosa servono?
+	Le classi possono essere dischiarate --> all’interno di altre classi in qualità di 
+	membri (classi interne: possono essere statiche o di istanza) oppure
+	all’interno di blocchi di codice (classi interne locali). 
+		USATE PER  	1) Connettere in modo semplice ed efficace oggetti correlati 
+						esplicitamente: un tipo innestato è considerato parte del 
+						tipo in cui è racchiuso.
+			   		2) Information hiding di tipi di dati 
+		PROPRIETÁ 	1) La visibilità della classe innestata è per default la stessa 
+						di quella del contenitore
+			   		2) Il nome della classe innestata è così composto: 
+					   NomeContenitore.NomeClasseInnestata
+						
+- Tipi generici, parametrici e rawType
+	I tipi generici sono stati introdotti per permettere di scrivere codice generico, 
+	applicabile a più tipi di dati (Riuso del codice, evita overloading).
+	I tipi di dati generici (o parametrici) sono classi e metodi che hanno un parametro 
+	di tipo. Ad esempio ArrayList<Point> è un tipo parametrico, in cui è stato
+	specificato il tipo argomento da applicare alla classe generica.
+	Ogni volta che si definisce un tipo generico, il compilatore lo trasforma con una 
+	operazione in un tipo grezzo (raw type). Tutte le variabili di tipo
+	che compaiono nella definizione della classe generica sono sostituite con Object. 
+	Ad esempio il tipo grezzo di Pair(T first, T second) è Pair(Object first, Object Second).
+	Si possono usare i termini "implements" o "extends" per poter specificare se la
+	classe dell'istanza del parametro estende una classe e/o implementa una o piú interfacce.
+	
+- Metodi e variabili statiche o d’istanza
+	Variabili di istanza: servono per memorizzare lo stato degli oggetti, ogni oggetto 
+	ha la sua copia della variabile di istanza nella heap
+	Variabili di classe, o statiche (static): c'é una unica copia della variabile 
+	per la classe ed é condivisa tra tutti gli oggetti. 
+	Un metodo statico appartiene alla classe e quindi non è parte di nessun oggetto. 
+	Non ha accesso alle variabili d'istanza di nessun oggetto.
+	Un metodo statico può essere invocato anche se non esiste alcun oggetto della classe.
+
+- Socket
+	È una astrazione software che rappresenta il terminale di una connessione 
+	tra due computer.
+	Il client effettua la richiesta di una connessione ad un server per un servizio 
+	collegato ad una determinata porta. 
+	Se la richiesta è accettata la connessione tra i due applicativi dei due 
+	computer è stabilita.
+	Da ogni socket è possibile ottenere uno stream di input ed uno di output, 
+	in Java e`possibile utilizzare stream di oggetti tramite socket con gli stream 
+	ObjectInputStream e ObjectOutputStream
+	(Gli oggetti devono implementare l’interfaccia java.io.Serializable)
+	ServerSocket --> Il metodo accept() si mette in attesa di una richiesta di 
+	connessione da un socket client
+
+- Eccezioni
+	Il costrutto throw permette di lanciare eccezioni, Le eccezioni sono veri e 
+	propri oggetti il cui stato riporta le informazioni riguardanti la situazione 
+	in cui si è verificato errore.
+	Le eccezioni sono passate all'indietro da un metodo al suo chiamante fino a 
+	quando si trova exception handler che la cattura e la gestisce riprendendo 
+	l'esecuzione.
+	TRY-CATCH --> Se all'interno del blocco try si verifica una eccezione non viene 
+	eseguito il rimanente codice del blocco try. Se l'eccezione sollevata è del 
+	tipo gestito nel catch, si esegue il codice del blocco catch e si riprende 
+	l'esecuzione dall'istruzione che segue la try...catch altrimenti Se l'eccezione 
+	sollevata NON è del tipo gestito nel catch, il metodo che contiene la try...catch
+	termina immediatamente, il suo frame viene disallocato e l'esecuzione viene 
+	passata indietro al suo chiamante.
+
+- Come vengono gestiti i thread con wait, notify, notifyAll
+	Spesso un thread non può eseguire un metodo sincronizzato, anche se ha ottenuto 
+	il possesso del lock, perché deve aspettare che si verifichi una qualche
+	condizione che non dipende da lui (ESEMPIO PRODUTTORE CONSUMATORE).
+	Per non occupare inutilmente la CPU, il thread deve rilasciare il lock, 
+	mettendosi in attesa della condizione, eseguendo il metodo wait(), in modo 
+	che un altro thread possa entrare e realizzare la condizione. Quando un thread 
+	realizza la condizione, avvisa, eseguendo notify() o notifyAll(), la notify 
+	avvisa un Thread in maniera casuale dalla lista di wait (Può portare al deadlock), 
+	la notifyAll invece avvisa tutti i Thread in lista di wait.
+	Per ogni oggetto ci sono due liste di thread:
+		- Lista del lock: contiene i thread in attesa di acquisire il lock dell’oggetto
+		- Lista di wait: contiene i thread che sono in wait su quell’oggetto.
+	Ricordiamo che un thread è blocked se sta eseguendo una sleep, un operazione 
+	di IO o si trova in una di queste due liste
+
+- Gerarchia di classi per fare input-output
+	Le operazioni di I/O avvengono attraverso stream (principalmente sequenze di bytes)
+	La Classe OutputStream ha come sottoclassi --> FileOutputStream, 
+													PipedOutputStream, 
+													ByteArrayOutputStream
+	La Classe InputStream ha come sottoclassi --> FileInputStream, 
+													PipedInputStream, 
+													ByteArrayInputStream, 
+													StringBufferInputStream
+	Per ottimizzare i tempi di accesso ad una risorsa è opportuno leggere e 
+	scrivere molti caratteri in una sola volta e
+	memorizzarli in un buffer --> le classi BufferedReader e BufferedWriter per 
+	usare buffer in lettura e scrittura.
+	L'oggetto Scanner impostato su un file permette di analizzare il contenuto 
+	di una linea del file se si sa quali tipi di dati contiene
+	L'oggetto PrintWriter invece permette di scrivere su un File
+
+
+- Java Reflection
+	Quando un programma è in esecuzione, il sistema runtime di Java conserva la 
+	RunTime Type Identification (RTTI) di ogni oggetto.
+	La Reflection è un meccanismo fornito da Java per analizzare dinamicamente 
+	le funzionalità delle classi, ad esempio per ottenere a run-time informazioni 
+	su campi, metodi, costruttori. Si basa sui package java.lang.reflect 
+	(contenente le classi Constructor, Method e Field) e la classe Class.
+
+- Gestione della memoria della JVM
+	Memoria statica
+		• mantiene costanti e variabili statiche (variabili di tipo semplice 
+			e riferimenti a oggetti)
+		• mantiene il codice delle classi
+	Stack
+		• mantiene record di attivazione di metodi; per ciascun record di 
+			attivazione, mantiene variabili dei metodi (variabili di tipo semplice 
+			e riferimenti a oggetti)
+		• gestito come una pila (LIFO)
+	Heap
+		• mantiene i dati creati dinamicamente (oggetti)
+		• quando i dati non sono più indirizzati dal programma il Garbage Collector 
+			libera la memora da essi occupata per reciclarla. Il Garbage
+			Collector è un programma SW che agisce in background
+
+- Collezioni
+	Java fornisce un insieme di classi che realizzano le strutture dati più 
+	utili (collezioni), come liste o insiemi.
+	List<E> è una interface che specifica le operazioni principali sulle liste. 
+	ArrayList<E> e LinkedList<E> sono due classi concrete
+	che implementano l'interfaccia List<E> in modi diversi.
+		Collection: un arbitrario gruppo di oggetti
+		List: un gruppo di oggetti memorizzati in una data sequenza
+		Set: un gruppo di oggetti senza duplicati
+		Map: un gruppo di coppie (oggetti) chiave-valore
+
+- Properties JavaFX (molto vaga)
+	Le proprietà JavaFX memorizzano lo stato interno di un controllo e ci consentono 
+	di ascoltare la modifica dello stato dai controlli dell'interfaccia utente JavaFX, 
+	quindi il loro punto di forza è che possono essere associate in modo che aggiornino 
+	automaticamente l'interfaccia utente quando si verifica una modifica.
+
+- JavaBeans
+	In informatica le JavaBeans (letteralmente, chicchi di Java) sono classi 
+	scritte in linguaggio di programmazione Java secondo una particolare convenzione. 
+	Sono utilizzate per incapsulare più oggetti in un oggetto singolo (il bean), 
+	cosicché tali oggetti possano essere passati come un singolo oggetto bean
+	invece che come multipli oggetti individuali.
+
+- Binding dinamico (26/01)
+	A compilazione viene scelta la firma, a esecuzione viene scelta l'implementazione.
+
+- Lambda espressioni (26/01)
